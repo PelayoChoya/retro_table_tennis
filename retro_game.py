@@ -2,13 +2,16 @@ import pygame
  
 #paddle class definition
 
-class Padle:
+class Padle(pygame.sprite.Sprite):
 
 	def __init__(self,x,y,moveupkey, movedownkey):
+		# Call the parent class (Sprite) constructor
+		super(Padle,self).__init__()
 		self.x = x
 		self.y = y
 		self.moveupkey = moveupkey
 		self.movedownkey = movedownkey
+		
 
 	def goup (self):
 		self.y  -= 3
@@ -21,10 +24,21 @@ class Padle:
 		if pygame.key.get_pressed()[self.movedownkey]: self.godown()
 
 
-class Ball:
+class Ball(pygame.sprite.Sprite):
+
 	def __init__(self, x, y):
+		# Call the parent class (Sprite) constructor
+		super(Ball,self).__init__()
 		self.x = x
 		self.y = y
+		self.direction = 'left'
+		
+    	
+	def mov(self):
+		if self.direction == 'left': self.x -= 2
+		if self.direction == 'right': self.x += 2
+		
+	
 
 #Parameter Inialization
 
@@ -45,7 +59,9 @@ while not done:
 
 	Padleleft.movement()
 	Padleright.movement()
-
+	Ball.mov()
+	#check if the ball has collided
+	#collision = pygame.sprite.spritecollide(Padleleft, PadleRight, False,pygame.sprite.collide_circle)
 	screen.fill((0, 0, 0))
 	pygame.draw.rect(screen, (255,255,255), pygame.Rect(Padleleft.x, Padleleft.y, 10, 30))                    
 	pygame.draw.rect(screen, (255,255,255), pygame.Rect(Padleright.x, Padleright.y, 10, 30))                    
