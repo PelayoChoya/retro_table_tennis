@@ -7,6 +7,30 @@ BLACK = (  0,   0,   0)
 WHITE = (255, 255, 255)
 RED   = (255,   0,   0)
 
+class Border(pygame.sprite.Sprite):
+    """
+    This class represents the ball.
+    It derives from the "Sprite" class in Pygame.
+    """
+ 
+    def __init__(self, color, width, height):
+        """ Constructor. Pass in the color of the block,
+        and its x and y position. """
+ 
+        # Call the parent class (Sprite) constructor
+        super(Border,self).__init__()
+ 
+        # Create an image of the block, and fill it with a color.
+        # This could also be an image loaded from the disk.
+        self.image = pygame.Surface([width, height])
+        self.image.fill(color)
+ 
+        # Fetch the rectangle object that has the dimensions of the image
+        # image.
+        # Update the position of this object by setting the values
+        # of rect.x and rect.y
+        self.rect = self.image.get_rect()
+
 
 class Padle(pygame.sprite.Sprite):
     """
@@ -41,7 +65,7 @@ class Padle(pygame.sprite.Sprite):
         if pygame.key.get_pressed()[self.movementUpKey]:self.rect.y -= 3
 
 class Ball(pygame.sprite.Sprite):
-    
+
     def __init__(self,color):
         super(Ball,self).__init__()
  
@@ -50,20 +74,31 @@ class Ball(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, color, (5, 5), 5, 0)
         self.rect = self.image.get_rect()
         self.direction = 'right'
+        self.height = 'NONE'
     
-    def change_direction(self):
+    def change_direction(self, height):
         
         if self.direction == 'right':
             self.direction = 'left'
+            self.height = height
         elif self.direction == 'left':
-            self.direction = 'right'  
+            self.direction = 'right'
+            self.height = height  
         
 
     def movement(self):
-        if self.direction == 'right' : new_place = tuple(map(operator.add, self.rect.center , ( 1, 0)))
-        if self.direction == 'left' : new_place = tuple(map(operator.add, self.rect.center , ( -1, 0)))    
+        if self.direction == 'right' and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( 1, 0)))
+        if self.direction == 'left'  and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( -1, 0)))
+        if self.direction == 'right' and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( 1, 1)))
+        if self.direction == 'left'  and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( -1, 1)))  
+        if self.direction == 'right' and self.height == 'UP' : new_place = tuple(map(operator.add, self.rect.center , ( 1, -1)))
+        if self.direction == 'left'  and self.height == 'UP' : new_place = tuple(map(operator.add, self.rect.center , ( -1, -1)))      
         self.rect.center = new_place
-        
+    
+    def  border_collision(self):
+        print 'here'
+        new_place = tuple(map(operator.add, self.rect.center , ( 0, 3)))
+        self.rect.center = new_place
 
 # Initialize Pygame
 pygame.init()
@@ -73,6 +108,8 @@ screen_width = 400
 screen_height = 300
 screen = pygame.display.set_mode([screen_width, screen_height])
 
+
+border_list = pygame.sprite.Group()
 # This is a list of 'sprites.' Each block in the program is
 # added to this list. The list is managed by a class called 'Group.'
 padle_list = pygame.sprite.Group()
@@ -105,6 +142,28 @@ padleright.rect.y = 135
 padle_list.add(padleright)
 all_sprites_list.add(padleright)
 
+upBorder = Border(WHITE, 400, 10)
+
+# Setting the object's position
+
+upBorder.rect.x = 0
+upBorder.rect.y = 0
+
+# Add the block to the list of objects
+border_list.add(upBorder)
+all_sprites_list.add(upBorder)
+
+downBorder = Border(WHITE, 400, 10)
+
+# Setting the object's position
+
+downBorder.rect.x = 0
+downBorder.rect.y = 290
+
+# Add the block to the list of objects
+border_list.add(downBorder)
+all_sprites_list.add(downBorder)
+
 ball_list = pygame.sprite.Group()
 
 ball = Ball(WHITE)
@@ -121,32 +180,44 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
+def collision_place(ballY, PadleY):
+
+    if ballY > PadleY: 
+        return 'UP'
+    elif ballY < PadleY: 
+        return 'DOWN'
+    elif ballY == PadleY:
+        return 'NONE'
+    
 # -------- Main Program Loop -----------
 while not done:
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT: 
             done = True
 
-    hit_list = pygame.sprite.spritecollide(ball, padle_list, False)
-    if hit_list: 
-        ball.change_direction()
+    padle_hit_list = pygame.sprite.spritecollide(ball, padle_list, False)
+    if padle_hit_list: 
+        ball.change_direction(collision_place(ball.rect.center[0], padleleft.rect.y))
         print ball.direction
         print "yes"
+    border_hit_list = pygame.sprite.spritecollide(ball, border_list, False)
+    if border_hit_list:
+        ball.border_collision()
     # Clear the screen
     screen.fill(BLACK)
 
     padleleft.movement()
     padleright.movement()
     ball.movement()
-  
+    #print padleleft.rect.y
 
     # Draw all the spites
     all_sprites_list.draw(screen)
  
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
- 
+
     # Limit to 60 frames per second
     clock.tick(60)
-
+    #print ball.rect.center[0], padleleft.rect.y
 pygame.quit()
