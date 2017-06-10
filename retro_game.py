@@ -41,6 +41,7 @@ class Padle(pygame.sprite.Sprite):
         if pygame.key.get_pressed()[self.movementUpKey]:self.rect.y -= 3
 
 class Ball(pygame.sprite.Sprite):
+    
     def __init__(self,color):
         super(Ball,self).__init__()
  
@@ -49,7 +50,15 @@ class Ball(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, color, (5, 5), 5, 0)
         self.rect = self.image.get_rect()
         self.direction = 'right'
+    
+    def change_direction(self):
         
+        if self.direction == 'right':
+            self.direction = 'left'
+        elif self.direction == 'left':
+            self.direction = 'right'  
+        
+
     def movement(self):
         if self.direction == 'right' : new_place = tuple(map(operator.add, self.rect.center , ( 1, 0)))
         if self.direction == 'left' : new_place = tuple(map(operator.add, self.rect.center , ( -1, 0)))    
@@ -118,6 +127,11 @@ while not done:
         if event.type == pygame.QUIT: 
             done = True
 
+    hit_list = pygame.sprite.spritecollide(ball, padle_list, False)
+    if hit_list: 
+        ball.change_direction()
+        print ball.direction
+        print "yes"
     # Clear the screen
     screen.fill(BLACK)
 
