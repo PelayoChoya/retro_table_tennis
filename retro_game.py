@@ -23,7 +23,7 @@ class Border(pygame.sprite.Sprite):
         # Create an image of the block, and fill it with a color.
         # This could also be an image loaded from the disk.
         self.image = pygame.Surface([width, height])
-        self.image.fill(color)
+        self.image.fill(BLACK)
  
         # Fetch the rectangle object that has the dimensions of the image
         # image.
@@ -86,7 +86,13 @@ class Ball(pygame.sprite.Sprite):
             self.height = height  
         
 
+    def  border_collision(self):
+
+        if self.height == 'UP': self.height = 'DOWN'
+        elif self.height == 'DOWN': self.height = 'UP'
+
     def movement(self):
+
         if self.direction == 'right' and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( 1, 0)))
         if self.direction == 'left'  and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( -1, 0)))
         if self.direction == 'right' and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( 1, 1)))
@@ -95,10 +101,8 @@ class Ball(pygame.sprite.Sprite):
         if self.direction == 'left'  and self.height == 'UP' : new_place = tuple(map(operator.add, self.rect.center , ( -1, -1)))      
         self.rect.center = new_place
     
-    def  border_collision(self):
-        print 'here'
-        new_place = tuple(map(operator.add, self.rect.center , ( 0, 3)))
-        self.rect.center = new_place
+    
+        
 
 # Initialize Pygame
 pygame.init()
