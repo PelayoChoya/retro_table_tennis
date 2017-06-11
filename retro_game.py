@@ -1,11 +1,14 @@
 import pygame
 import operator
+import random
 
 
 # Define some colors
 BLACK = (  0,   0,   0)
 WHITE = (255, 255, 255)
 RED   = (255,   0,   0)
+
+random_height = ('UP','DOWN','NONE')
 
 class Border(pygame.sprite.Sprite):
     """
@@ -92,18 +95,21 @@ class Ball(pygame.sprite.Sprite):
         elif self.height == 'DOWN': self.height = 'UP'
 
     def movement(self):
-
-        if self.direction == 'right' and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( 1, 0)))
-        if self.direction == 'left'  and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( -1, 0)))
-        if self.direction == 'right' and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( 1, 1)))
-        if self.direction == 'left'  and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( -1, 1)))  
-        if self.direction == 'right' and self.height == 'UP' : new_place = tuple(map(operator.add, self.rect.center , ( 1, -1)))
-        if self.direction == 'left'  and self.height == 'UP' : new_place = tuple(map(operator.add, self.rect.center , ( -1, -1)))      
+        
+        if self.direction == 'right' and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( 3, 0)))
+        if self.direction == 'left'  and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( -3, 0)))
+        if self.direction == 'right' and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( 2, 2)))
+        if self.direction == 'left'  and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( -2, 2)))  
+        if self.direction == 'right' and self.height == 'UP' : new_place = tuple(map(operator.add, self.rect.center , ( 2, -2)))
+        if self.direction == 'left'  and self.height == 'UP' : new_place = tuple(map(operator.add, self.rect.center , ( -2, -2)))      
         self.rect.center = new_place
     
     
         
 
+def collision_place(ballY, PadleY):
+    
+    return random.choice(random_height)
 # Initialize Pygame
 pygame.init()
  
@@ -184,14 +190,6 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-def collision_place(ballY, PadleY):
-
-    if ballY > PadleY: 
-        return 'UP'
-    elif ballY < PadleY: 
-        return 'DOWN'
-    elif ballY == PadleY:
-        return 'NONE'
     
 # -------- Main Program Loop -----------
 while not done:
@@ -200,10 +198,9 @@ while not done:
             done = True
 
     padle_hit_list = pygame.sprite.spritecollide(ball, padle_list, False)
+
     if padle_hit_list: 
         ball.change_direction(collision_place(ball.rect.center[0], padleleft.rect.y))
-        print ball.direction
-        print "yes"
     border_hit_list = pygame.sprite.spritecollide(ball, border_list, False)
     if border_hit_list:
         ball.border_collision()
@@ -223,5 +220,5 @@ while not done:
 
     # Limit to 60 frames per second
     clock.tick(60)
-    #print ball.rect.center[0], padleleft.rect.y
+    
 pygame.quit()
