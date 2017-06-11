@@ -1,6 +1,7 @@
 import pygame
 import operator
 import random
+import neuralnetwork
 
 
 # Define some colors
@@ -62,10 +63,18 @@ class Padle(pygame.sprite.Sprite):
         self.movementDownKey = movementDownKey
         self.movementUpKey = movementUpKey
 
-    def movement(self):
+        
 
+    def movement(self):
+        
         if pygame.key.get_pressed()[self.movementDownKey]:self.rect.y += 3
         if pygame.key.get_pressed()[self.movementUpKey]:self.rect.y -= 3
+    
+    def neuralnet_movement ( self , dir):
+
+        if dir == -1 and (self.rect.y < 269): self.rect.y += 3
+        elif dir == 1 and (self.rect.y > 1):self.rect.y -= 3
+        elif dir == 0: self.rect.y += 0
 
 class Ball(pygame.sprite.Sprite):
 
@@ -95,9 +104,9 @@ class Ball(pygame.sprite.Sprite):
         elif self.height == 'DOWN': self.height = 'UP'
 
     def movement(self):
-        
-        if self.direction == 'right' and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( 3, 0)))
-        if self.direction == 'left'  and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( -3, 0)))
+
+        if self.direction == 'right' and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( 2, 0)))
+        if self.direction == 'left'  and self.height == 'NONE' : new_place = tuple(map(operator.add, self.rect.center , ( -2, 0)))
         if self.direction == 'right' and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( 2, 2)))
         if self.direction == 'left'  and self.height == 'DOWN' : new_place = tuple(map(operator.add, self.rect.center , ( -2, 2)))  
         if self.direction == 'right' and self.height == 'UP' : new_place = tuple(map(operator.add, self.rect.center , ( 2, -2)))
@@ -110,6 +119,22 @@ class Ball(pygame.sprite.Sprite):
 def collision_place(ballY, PadleY):
     
     return random.choice(random_height)
+
+def velocity_valueX(ball):
+    if ball.direction == 'right':
+        return 2
+    elif ball.direction == 'left':
+        return -2 
+
+def velocity_valueY(ball):
+    if ball.height == 'NONE':
+        return 0
+    elif ball.height == 'UP':
+        return -2 
+    elif ball.height == 'DOWN':
+        return 2
+
+
 # Initialize Pygame
 pygame.init()
  
@@ -190,7 +215,9 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-    
+  
+brain=neuralnetwork.createandtrain(10)
+
 # -------- Main Program Loop -----------
 while not done:
     for event in pygame.event.get(): 
@@ -204,10 +231,11 @@ while not done:
     border_hit_list = pygame.sprite.spritecollide(ball, border_list, False)
     if border_hit_list:
         ball.border_collision()
+
     # Clear the screen
     screen.fill(BLACK)
-
-    padleleft.movement()
+    neural_result = brain.output([float(ball.rect.center[0])/400,(1-float(ball.rect.center[1])/300),velocity_valueX(ball),-velocity_valueY(ball),(1-float(padleleft.rect.y - 15)/300)])
+    padleleft.neuralnet_movement(neural_result)
     padleright.movement()
     ball.movement()
     #print padleleft.rect.y
@@ -217,7 +245,7 @@ while not done:
  
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
-
+    print [float(ball.rect.center[0])/400,(1-float(ball.rect.center[1])/300),velocity_valueX(ball),-velocity_valueY(ball),(1-float(padleleft.rect.y -30 )/300)]
     # Limit to 60 frames per second
     clock.tick(60)
     
