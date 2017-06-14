@@ -215,8 +215,8 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-  
-brain=neuralnetwork.createandtrain(10)
+pop=[neuralnetwork.Network([5,3]) for i in range(20)]
+brain=neuralnetwork.createandtrain(pop,100)
 
 # -------- Main Program Loop -----------
 while not done:
@@ -234,7 +234,7 @@ while not done:
 
     # Clear the screen
     screen.fill(BLACK)
-    neural_result = brain.output([float(ball.rect.center[0])/400,(1-float(ball.rect.center[1])/300),velocity_valueX(ball),-velocity_valueY(ball),(1-float(padleleft.rect.y - 15)/300)])
+    neural_result = brain.output([float(ball.rect.center[0])/400,(1-float(ball.rect.center[1])/300),float(velocity_valueX(ball))*60/300,-float(velocity_valueY(ball))*60/300,(1-float(padleleft.rect.y +15)/300)])
     padleleft.neuralnet_movement(neural_result)
     padleright.movement()
     ball.movement()
@@ -245,7 +245,8 @@ while not done:
  
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
-    print [float(ball.rect.center[0])/400,(1-float(ball.rect.center[1])/300),velocity_valueX(ball),-velocity_valueY(ball),(1-float(padleleft.rect.y -30 )/300)]
+    print [float(ball.rect.center[0])/400,(1-float(ball.rect.center[1])/300),float(velocity_valueX(ball))*60/300,-float(velocity_valueY(ball))*60/300,(1-float(padleleft.rect.y +15)/300)]
+    print neural_result
     # Limit to 60 frames per second
     clock.tick(60)
     

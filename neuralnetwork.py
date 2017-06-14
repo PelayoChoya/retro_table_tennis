@@ -57,9 +57,9 @@ class Network():
         return(mutation)
         
 
-bar_size=0.2
-bar_speed=0.75
-ball_speed=1.7
+bar_size=0.1
+bar_speed=0.6
+ball_speed=0.56
 
 dt=0.1
 
@@ -69,12 +69,12 @@ def match(brain_1,brain_2,show=0):
     x_ball=0.5
     y_ball=0.5
     angle=random()*2*pi
-    vx_ball=cos(angle)
-    vy_ball=sin(angle)
+    vx_ball=ball_speed*cos(angle)
+    vy_ball=ball_speed*sin(angle)
     while abs(vx_ball)<0.4 or abs(vx_ball)>0.5:
         angle=random()*2*pi
-        vx_ball=cos(angle)
-        vy_ball=sin(angle)
+        vx_ball=ball_speed*cos(angle)
+        vy_ball=ball_speed*sin(angle)
     if vx_ball>0:
         next_contact_1=0.5
         next_contact_2=0.5+(1/2)*vy_ball/vx_ball
@@ -244,8 +244,8 @@ def enhance(pop,show=0):
 
 
 
-def createandtrain(n):
-    pop=[Network([5,3]) for i in range(20)]
+def createandtrain(pop,n):
+    #pop=[Network([5,3]) for i in range(20)]
     for i in range(n):
         winner=enhance(pop)
         print(i)
