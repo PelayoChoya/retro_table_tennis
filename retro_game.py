@@ -216,7 +216,7 @@ done = False
 clock = pygame.time.Clock()
 
 pop=[neuralnetwork.Network([5,3]) for i in range(20)]
-brain=neuralnetwork.createandtrain(pop,100)
+brain=neuralnetwork.createandtrain(pop,10)
 
 score_reached = False
 
@@ -230,7 +230,7 @@ score1_pos = [30, 10]
 score2 = 0
 score2_font = pygame.font.Font(None, 50)
 score2_surf = score2_font.render(str(score2), 1, (255, 255, 255))
-score2_pos = [370, 10]
+score2_pos = [360, 10]
 
 # Setting the players' names
 player_nn = 0
@@ -241,7 +241,9 @@ player_nn_pos = [60, 25]
 player_human = 0
 player_human_font = pygame.font.Font(None, 20)
 player_human_surf = player_nn_font.render("Human" , 1, (255, 255, 255))
-player_human_pos = [320, 25]
+player_human_pos = [310, 25]
+
+
 
 # -------- Main Program Loop -----------
 while not done or not score_reached:
@@ -278,7 +280,9 @@ while not done or not score_reached:
 
     # Draw all the spites
     all_sprites_list.draw(screen)
- 
+    pygame.draw.line(screen,WHITE,(200,0),(200,300),5)
+    pygame.draw.line(screen,WHITE,(0,150),(400,150),1)
+
     # Draw score
     screen.blit(score1_surf, score1_pos)
     screen.blit(score2_surf, score2_pos)
