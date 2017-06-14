@@ -218,8 +218,33 @@ clock = pygame.time.Clock()
 pop=[neuralnetwork.Network([5,3]) for i in range(20)]
 brain=neuralnetwork.createandtrain(pop,100)
 
+score_reached = False
+
+
+# Setting the score display
+score1 = 0
+score1_font = pygame.font.Font(None, 50)
+score1_surf = score1_font.render(str(score1) , 1, (255, 255, 255))
+score1_pos = [30, 10]
+
+score2 = 0
+score2_font = pygame.font.Font(None, 50)
+score2_surf = score2_font.render(str(score2), 1, (255, 255, 255))
+score2_pos = [370, 10]
+
+# Setting the players' names
+player_nn = 0
+player_nn_font = pygame.font.Font(None, 20)
+player_nn_surf = player_nn_font.render("Neural Network" , 1, (255, 255, 255))
+player_nn_pos = [60, 25]
+
+player_human = 0
+player_human_font = pygame.font.Font(None, 20)
+player_human_surf = player_nn_font.render("Human" , 1, (255, 255, 255))
+player_human_pos = [320, 25]
+
 # -------- Main Program Loop -----------
-while not done:
+while not done or not score_reached:
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT: 
             done = True
@@ -227,11 +252,22 @@ while not done:
     padle_hit_list = pygame.sprite.spritecollide(ball, padle_list, False)
 
     if padle_hit_list: 
-        ball.change_direction(collision_place(ball.rect.center[0], padleleft.rect.y))
+        ball.change_direction(collision_place(ball.rect.center[0], padleleft.rect.y))    
     border_hit_list = pygame.sprite.spritecollide(ball, border_list, False)
     if border_hit_list:
         ball.border_collision()
-
+    if (ball.rect.center[0] < 0 ) :
+        score2 +=1
+        score2_surf = score2_font.render(str(score2), 1, (255, 255, 255))
+        ball.rect.x = 240
+        ball.rect.y = 150   
+    elif( ball.rect.center[0] > 400 ) :  
+        score1 += 1
+        score1_surf = score1_font.render(str(score1), 1, (255, 255, 255))
+        ball.rect.x = 240
+        ball.rect.y = 150
+    if (score1 == 3 or score2 == 3):
+        score_reached = True    
     # Clear the screen
     screen.fill(BLACK)
     neural_result = brain.output([float(ball.rect.center[0])/400,(1-float(ball.rect.center[1])/300),float(velocity_valueX(ball))*60/300,-float(velocity_valueY(ball))*60/300,(1-float(padleleft.rect.y +15)/300)])
@@ -243,6 +279,11 @@ while not done:
     # Draw all the spites
     all_sprites_list.draw(screen)
  
+    # Draw score
+    screen.blit(score1_surf, score1_pos)
+    screen.blit(score2_surf, score2_pos)
+    screen.blit(player_nn_surf, player_nn_pos)
+    screen.blit(player_human_surf, player_human_pos)
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
     print [float(ball.rect.center[0])/400,(1-float(ball.rect.center[1])/300),float(velocity_valueX(ball))*60/300,-float(velocity_valueY(ball))*60/300,(1-float(padleleft.rect.y +15)/300)]
