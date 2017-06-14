@@ -216,7 +216,7 @@ done = False
 clock = pygame.time.Clock()
 
 pop=[neuralnetwork.Network([5,3]) for i in range(20)]
-brain=neuralnetwork.createandtrain(pop,10)
+brain=neuralnetwork.createandtrain(pop,100)
 
 score_reached = False
 
