@@ -1,3 +1,10 @@
+#
+# Neural network integration in a Table tennis game
+#
+# Made by Pelayo Choya and Antoine Diers
+#
+
+
 from math import *
 from random import *
 import numpy as np
@@ -233,7 +240,7 @@ def enhance(pop,show=0):
     winner=results.index(max(results))
     for i in range(len(pop)):
         if i!=winner:
-            if random()>0.1:
+            if random()>0.3:
                 pop[i]=pop[winner].get_mutation()
             else:
                 pop[i]=Network([5,3])

@@ -1,3 +1,10 @@
+#
+# Neural network integration in a Table tennis game
+#
+# Made by Pelayo Choya and Antoine Diers
+#
+
+
 import pygame
 import operator
 import random
